@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 
 project(wavelet)
 
@@ -25,11 +25,17 @@ else(Valgrind_FOUND)
 endif(Valgrind_FOUND)
 
 include(GNUInstallDirs)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/highway EXCLUDE_FROM_ALL)
 
 include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${CMAKE_CURRENT_SOURCE_DIR}/src/include
-  ${TIFF_INCLUDE_DIRNAME})
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/highway
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/tile
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/util
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/wavelet
+)
   
 # Compiler specific flags:
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
@@ -37,11 +43,10 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
 endif()
 
 set(LIBRARY_SRCS
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/wavelet/wavelet.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/wavelet/WaveletHWY.cpp
 )
-  
-add_executable(wavelet ${CMAKE_CURRENT_SOURCE_DIR}/src/wavelet.cpp  ${LIBRARY_SRCS} )
+ 
+add_executable(wavebench ${CMAKE_CURRENT_SOURCE_DIR}/src/wavebench.cpp  ${LIBRARY_SRCS} )
 
-target_link_libraries(wavelet ${CMAKE_THREAD_LIBS_INIT} )
-
-target_compile_options(wavelet PRIVATE ${WAVELET_COMPILE_OPTIONS})
+target_link_libraries(wavebench PRIVATE ${CMAKE_THREAD_LIBS_INIT} hwy )
+target_compile_options(wavebench PRIVATE ${WAVELET_COMPILE_OPTIONS} ${HWY_FLAGS})

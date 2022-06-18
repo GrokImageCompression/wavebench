@@ -22,25 +22,10 @@ jobs:
         sudo apt-get install -y gcc-10 g++-10
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 \
           --slave /usr/bin/g++ g++ /usr/bin/g++-10 --slave /usr/bin/gcov gcov /usr/bin/gcov-10
-        git clone https://github.com/axboe/liburing.git
-        cd liburing && ./configure && make -j6 && sudo make install
-        sudo apt-get install libboost-all-dev
-
-
-    - name: macox-dependencies
-      if: startsWith(matrix.os, 'macos')
-      run: |
-        brew install boost
-
-    - name: windows-dependencies
-      if: startsWith(matrix.os, 'windows')
-      run: |
-        choco install boost-msvc-14.1
 
 
     - name: dependencies
       run: |
-        python3 -m pip install --upgrade pip
         cmake -E make_directory ${{ github.workspace }}/build
 
     - name: configure cmake
